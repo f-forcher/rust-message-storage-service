@@ -1,9 +1,11 @@
 syntax = "proto3";
 
-package message_storage_service;
+package v1.message_storage;
+
+import "google/protobuf/timestamp.proto";
 
 // The message storage service service definition.
-service MessageStorageService {
+service MessageStorage {
   // Sends a message
   rpc SendMessage (MessageRequest) returns (MessageResponse) {}
 }
@@ -16,7 +18,7 @@ message MessageRequest {
 
 // The response message
 message MessageResponse {
-  string key = 1;
+  google.protobuf.Timestamp timestamp = 1;
   uint32 id = 2;
   bool new = 3;
 }

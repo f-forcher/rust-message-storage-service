@@ -3,8 +3,19 @@ name = "rust-message-storage-service"
 version = "0.1.0"
 edition = "2021"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[[bin]] # Bin to run the HelloWorld gRPC server
+name = "message-storage-server"
+path = "src/server.rs"
+
+[[bin]] # Bin to run the HelloWorld gRPC client
+name = "message-storage-client"
+path = "src/client.rs"
 
 [dependencies]
-tokio = { version = "1", features = ["full"] }
 tonic = "0.10"
+prost = "0.12"
+tokio = { version = "1.0", features = ["macros", "rt-multi-thread"] }
+prost-types = "0.12"
+
+[build-dependencies]
+tonic-build = "0.10"
