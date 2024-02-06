@@ -2,10 +2,10 @@ use anyhow::{Context, Result};
 use std::time::SystemTime;
 use tonic::{transport::Server, Request, Response, Status};
 
-use proto::message_storage::v1::message_storage_server::{MessageStorage, MessageStorageServer};
-use proto::message_storage::v1::{MessageRequest, MessageResponse};
+pub mod api;
 
-pub mod proto;
+use api::grpc::message_storage::v1::message_storage_server::{MessageStorage, MessageStorageServer};
+use api::grpc::message_storage::v1::{MessageRequest, MessageResponse};
 
 #[derive(Debug, Default)]
 pub struct MessageStorageService {}
