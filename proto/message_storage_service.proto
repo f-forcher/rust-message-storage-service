@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+package message_storage_service;
+
+// The message storage service service definition.
+service MessageStorageService {
+  // Sends a message
+  rpc SendMessage (MessageRequest) returns (MessageResponse) {}
+}
+
+// The request message
+message MessageRequest {
+  string key = 1;
+  string tenant = 2;
+}
+
+// The response message
+message MessageResponse {
+  string key = 1;
+  uint32 id = 2;
+  bool new = 3;
+}
