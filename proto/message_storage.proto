@@ -1,6 +1,6 @@
 syntax = "proto3";
 
-package v1.message_storage;
+package message_storage.v1;
 
 import "google/protobuf/timestamp.proto";
 
