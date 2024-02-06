@@ -16,18 +16,19 @@ impl MessageStorage for MessageStorageService {
         &self,
         request: Request<MessageRequest>, // Accept request of type HelloRequest
     ) -> Result<Response<MessageResponse>, Status> {
-        // Return an instance of type HelloReply
         println!("Got a request: {:?}", request);
 
+        // Get the current time as duration from the UNIX epoch, 
+        // then add the current time to the UNIX epoch to get back a SystemTime
         let now = SystemTime::UNIX_EPOCH
             + SystemTime::now()
-                .duration_since(SystemTime::UNIX_EPOCH) // Get the current time
+                .duration_since(SystemTime::UNIX_EPOCH) 
                 .context("System time is less than unit epoch")
-                .map_err(|e| Status::internal(format!("Internal error: {}", e)))?; // Add the current time to the UNIX epoch
+                .map_err(|e| Status::internal(format!("Internal error: {}", e)))?; 
 
         let reply = MessageResponse {
             timestamp: Some(prost_types::Timestamp::from(now)),
-            id: 0, //TODO: Implement a proper ID
+            id: 1, //TODO: Implement a proper ID
             new: true,// TODO: Implement new flag
         };
 
@@ -37,7 +38,7 @@ impl MessageStorage for MessageStorageService {
 
 #[tokio::main]
 async fn main() -> Result<()> {
-    let addr = "[::1]:50051".parse()?;
+    let addr = "127.0.0.1:50051".parse()?;
     let message_service = MessageStorageService::default();
 
     Server::builder()
