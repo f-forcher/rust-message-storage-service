@@ -10,7 +10,6 @@ use api::grpc::message_storage;
 use message_storage::v1::message_storage_server::MessageStorage;
 use message_storage::v1::{MessageRequest, MessageResponse};
 
-
 #[derive(Debug, Default)]
 pub struct MessageStorageService {}
 

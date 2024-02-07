@@ -1,23 +1,16 @@
 use std::future::Future;
-use std::net::SocketAddr;
-use std::sync::Arc;
-use std::thread::sleep;
 use tokio::net::TcpListener;
-use tokio::net::TcpStream;
-//use tokio::sync::OnceCell;
-use tokio::task::JoinHandle;
-use tonic::transport::Uri;
+use tokio_stream::wrappers::TcpListenerStream;
 use tonic::Request;
-use tower::service_fn;
 
 use tonic::transport::{Channel, Endpoint, Server};
 
 use crate::api::grpc::message_storage::v1::{
-    message_storage_client::MessageStorageClient, message_storage_server::MessageStorageServer, MessageRequest
+    message_storage_client::MessageStorageClient, message_storage_server::MessageStorageServer,
+    MessageRequest,
 };
 
 use crate::MessageStorageService;
-use tokio_stream::wrappers::TcpListenerStream;
 
 async fn server_and_client() -> (impl Future<Output = ()>, MessageStorageClient<Channel>) {
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
@@ -44,18 +37,18 @@ async fn server_and_client() -> (impl Future<Output = ()>, MessageStorageClient<
 #[tokio::test]
 async fn err_wrong_key() {
     let (serve_future, mut client) = server_and_client().await;
-    
+
     let request_future = async {
         let response = client
-            .send_message(Request::new(MessageRequest{ 
-                key: "Wrongo!".to_string(), 
-                tenant: "tenant".to_string()
+            .send_message(Request::new(MessageRequest {
+                key: "Wrongo!".to_string(),
+                tenant: "tenant".to_string(),
             }))
             .await
             .unwrap_err();
 
-            insta::assert_debug_snapshot!(
-                response.message(), 
+        insta::assert_debug_snapshot!(
+                response.message(),
                 @r###""Key is wrong: Wrongo!""###);
     };
 
@@ -64,5 +57,4 @@ async fn err_wrong_key() {
         _ = serve_future => panic!("server returned first"),
         _ = request_future => (),
     }
-
 }
