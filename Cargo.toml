@@ -17,12 +17,9 @@ prost = "0.12"
 tokio = { version = "1.0", features = ["full"] }
 prost-types = "0.12"
 anyhow = "1.0.79"
-thiserror = "1.0.56"
 tokio-stream =  { version = "0.1", features = ["full"] }
 tower = "0.4"
-kv = "0.24.0"
 regex = "1.10.3"
-dashmap = "5.5.3"
 futures = "0.3.30"
 
 [build-dependencies]
