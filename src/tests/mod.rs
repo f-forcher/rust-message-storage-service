@@ -176,7 +176,7 @@ async fn get_multiple_messages() {
         // Same tenant and key, get same id
         assert_ne!(response.timestamp, None);
         assert_eq!(response.id, 2);
-        assert!(response.new);
+        assert!(!response.new);
     };
     tokio::select! {
         () = serve_future.clone() => panic!("Server returned first"),
