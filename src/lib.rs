@@ -1,7 +1,3 @@
-pub mod api;
-#[cfg(test)]
-mod tests;
-
 use anyhow::{Context, Result};
 use std::time::SystemTime;
 use tonic::{Request, Response, Status};
@@ -9,6 +5,10 @@ use tonic::{Request, Response, Status};
 use api::grpc::message_storage;
 use message_storage::v1::message_storage_server::MessageStorage;
 use message_storage::v1::{MessageRequest, MessageResponse};
+
+pub mod api;
+#[cfg(test)]
+mod tests;
 
 #[derive(Debug, Default)]
 pub struct MessageStorageService {}

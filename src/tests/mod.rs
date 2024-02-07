@@ -1,15 +1,13 @@
 use std::future::Future;
 use tokio::net::TcpListener;
 use tokio_stream::wrappers::TcpListenerStream;
-use tonic::Request;
-
 use tonic::transport::{Channel, Endpoint, Server};
+use tonic::Request;
 
 use crate::api::grpc::message_storage::v1::{
     message_storage_client::MessageStorageClient, message_storage_server::MessageStorageServer,
     MessageRequest,
 };
-
 use crate::MessageStorageService;
 
 async fn server_and_client() -> (impl Future<Output = ()>, MessageStorageClient<Channel>) {
@@ -54,7 +52,7 @@ async fn err_wrong_key() {
 
     // Wait for completion
     tokio::select! {
-        () = serve_future => panic!("server returned first"),
+        () = serve_future => panic!("Server returned first"),
         () = request_future => (),
     }
 }
