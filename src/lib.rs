@@ -13,16 +13,24 @@ pub mod api;
 #[cfg(test)]
 mod tests;
 
+/// Key of the message storage, identifying a message by its key and tenant.
 #[derive(Debug, PartialEq, Eq, Hash)]
 pub struct KeyAndTenant {
     key: String,
     tenant: String,
 }
 
+/// Id of a message (unique up to a combination of key and tenant).
+/// Is calculated as a simple increment of the number of messages stored.
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub struct MessageId(u64);
 
+
 impl KeyAndTenant {
+    /// Validate the key and tenant and create a new `KeyAndTenant`.
+    /// 
+    /// # Errors
+    /// Will return an error if the key is not in the right format.
     pub fn try_from_parts(key: &str, tenant: &str) -> Result<Self> {
         let valid_key_pattern = r"^K-[a-z0-9]{5}-[A-Z]$";
         let valid_key_regex = Regex::new(valid_key_pattern)
@@ -37,16 +45,10 @@ impl KeyAndTenant {
             tenant: tenant.to_owned(),
         })
     }
-
-    pub fn key(&self) -> &str {
-        &self.key
-    }
-
-    pub fn tenant(&self) -> &str {
-        &self.tenant
-    }
 }
 
+/// Implementation of the message storage service. Contains a simple in-memory storage
+/// using a `HashMap` with a `KeyAndTenant` as key and a `MessageId` as value.
 #[derive(Debug, Default)]
 pub struct MessageStorageService {
     message_store: Arc<Mutex<HashMap<KeyAndTenant, MessageId>>>,
@@ -54,6 +56,7 @@ pub struct MessageStorageService {
 
 #[tonic::async_trait]
 impl MessageStorage for MessageStorageService {
+    /// Send a message to the storage.
     async fn send_message(
         &self,
         request: Request<MessageRequest>,
