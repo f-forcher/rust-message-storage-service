@@ -1,8 +1,8 @@
 use anyhow::{anyhow, Context, Result};
 use regex::Regex;
 use std::collections::HashMap;
+use std::sync::{Arc, Mutex};
 use std::time::SystemTime;
-use tokio::sync::RwLock;
 use tonic::{Request, Response, Status};
 
 use api::grpc::message_storage;
@@ -19,11 +19,13 @@ pub struct KeyAndTenant {
     tenant: String,
 }
 
-#[derive(Debug, PartialEq, Eq)]
-pub struct IdAndCount {
-    pub id: u64,
-    pub count: u64,
-}
+// #[derive(Debug, PartialEq, Eq)]
+// pub struct IdAndCount {
+//     pub id: u64,
+//     pub count: u64,
+// }
+#[derive(Debug, PartialEq, Eq, Copy, Clone)]
+pub struct MessageId(u64);
 
 impl KeyAndTenant {
     pub fn try_from_parts(key: &str, tenant: &str) -> Result<Self> {
@@ -52,7 +54,7 @@ impl KeyAndTenant {
 
 #[derive(Debug, Default)]
 pub struct MessageStorageService {
-    message_store: RwLock<HashMap<KeyAndTenant, IdAndCount>>,
+    message_store: Arc<Mutex<HashMap<KeyAndTenant, MessageId>>>,
 }
 
 #[tonic::async_trait]
@@ -75,22 +77,28 @@ impl MessageStorage for MessageStorageService {
         let key_and_tenant = KeyAndTenant::try_from_parts(&request.key, &request.tenant)
             .map_err(|e| Status::invalid_argument(format!("{e}")))?;
 
-        let id_and_count = self
-            .message_store
-            .read()
-            .await
-            .get(&key_and_tenant)
-            .unwrap_or(&IdAndCount {
-                id: self.message_store.read().await.len() as u64 + 1,
-                count: 0,
-            });
-        let is_new = id_and_count.count == 0;
-        self.message_store
-            .insert(key_and_tenant, how_many_already + 1);
+        let (id, is_new) = {
+            let mut store = self
+                .message_store
+                .lock()
+                .map_err(|e| Status::internal(format!("Error acquiring the lock: {e}")))?;
 
+            match store.get(&key_and_tenant) {
+                Some(id) => (id.0, false),
+                None => {
+                    let id = MessageId(store.len() as u64 + 1);
+                    let old_val = store
+                        .insert(key_and_tenant, id);
+                    assert!(old_val.is_none());
+                    (id.0, true)
+                }
+            }
+        };
+
+        // .unwrap_or(&MessageId(store.len() as u64))
         let reply = MessageResponse {
             timestamp: Some(prost_types::Timestamp::from(now)),
-            id: 1,       //TODO: Implement a proper ID
+            id,          //TODO: Implement a proper ID
             new: is_new, // TODO: Implement new flag
         };
 
