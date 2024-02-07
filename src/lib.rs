@@ -19,7 +19,7 @@ impl MessageStorage for MessageStorageService {
         &self,
         request: Request<MessageRequest>,
     ) -> Result<Response<MessageResponse>, Status> {
-        println!("Got a request: {:?}", request);
+        println!("Got a request: {request:?}");
 
         // Get the current time as duration from the UNIX epoch,
         // then add the current time to the UNIX epoch to get back a SystemTime
@@ -27,13 +27,13 @@ impl MessageStorage for MessageStorageService {
             + SystemTime::now()
                 .duration_since(SystemTime::UNIX_EPOCH)
                 .context("System time is less than unit epoch")
-                .map_err(|e| Status::internal(format!("Internal error: {}", e)))?;
+                .map_err(|e| Status::internal(format!("Internal error: {e}")))?;
 
         let key = request.into_inner().key;
-        if key != "Wrongo!" {
-            println!("Key: {}", key);
+        if key == "Wrongo!" {
+            return Err(Status::invalid_argument(format!("Key is wrong: {key}")));
         } else {
-            return Err(Status::invalid_argument(format!("Key is wrong: {}", key)));
+            println!("Key: {key}");
         }
 
         let reply = MessageResponse {

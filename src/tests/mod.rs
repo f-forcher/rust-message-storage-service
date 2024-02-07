@@ -25,7 +25,7 @@ async fn server_and_client() -> (impl Future<Output = ()>, MessageStorageClient<
         assert!(result.is_ok());
     };
 
-    let channel = Endpoint::try_from(format!("http://{}", addr))
+    let channel = Endpoint::try_from(format!("http://{addr}"))
         .unwrap()
         .connect_lazy();
 
@@ -54,7 +54,7 @@ async fn err_wrong_key() {
 
     // Wait for completion
     tokio::select! {
-        _ = serve_future => panic!("server returned first"),
-        _ = request_future => (),
+        () = serve_future => panic!("server returned first"),
+        () = request_future => (),
     }
 }
