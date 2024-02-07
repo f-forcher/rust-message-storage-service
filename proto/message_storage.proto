@@ -19,6 +19,6 @@ message MessageRequest {
 // The response message
 message MessageResponse {
   google.protobuf.Timestamp timestamp = 1;
-  uint32 id = 2;
+  uint64 id = 2;
   bool new = 3;
 }
