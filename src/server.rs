@@ -2,10 +2,9 @@ use anyhow::{Context, Result};
 use std::time::SystemTime;
 use tonic::{transport::Server, Request, Response, Status};
 
-pub mod api;
-
-use api::grpc::message_storage::v1::message_storage_server::{MessageStorage, MessageStorageServer};
-use api::grpc::message_storage::v1::{MessageRequest, MessageResponse};
+use rust_message_storage_service::api::grpc::message_storage;
+use message_storage::v1::message_storage_server::{MessageStorage, MessageStorageServer};
+use message_storage::v1::{MessageRequest, MessageResponse};
 
 #[derive(Debug, Default)]
 pub struct MessageStorageService {}
@@ -14,7 +13,7 @@ pub struct MessageStorageService {}
 impl MessageStorage for MessageStorageService {
     async fn send_message(
         &self,
-        request: Request<MessageRequest>, // Accept request of type HelloRequest
+        request: Request<MessageRequest>,
     ) -> Result<Response<MessageResponse>, Status> {
         println!("Got a request: {:?}", request);
 
