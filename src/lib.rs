@@ -19,11 +19,6 @@ pub struct KeyAndTenant {
     tenant: String,
 }
 
-// #[derive(Debug, PartialEq, Eq)]
-// pub struct IdAndCount {
-//     pub id: u64,
-//     pub count: u64,
-// }
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub struct MessageId(u64);
 
@@ -34,7 +29,7 @@ impl KeyAndTenant {
             .with_context(|| format!("Wrong key regex: {valid_key_pattern}"))?;
 
         if !valid_key_regex.is_match(key) {
-            return Err(anyhow!("Key is wrong: {}", key));
+            return Err(anyhow!("Wrong key format: {}", key));
         }
 
         Ok(Self {
@@ -98,8 +93,8 @@ impl MessageStorage for MessageStorageService {
         // .unwrap_or(&MessageId(store.len() as u64))
         let reply = MessageResponse {
             timestamp: Some(prost_types::Timestamp::from(now)),
-            id,          //TODO: Implement a proper ID
-            new: is_new, // TODO: Implement new flag
+            id,
+            new: is_new,
         };
 
         Ok(Response::new(reply)) // Send back our formatted greeting

@@ -1,3 +1,0 @@
-{"run_id":"1707314299-252822244","line":49,"new":{"module_name":"rust_message_storage_service__tests","snapshot_name":"get_message_simple","metadata":{"source":"src/tests/mod.rs","assertion_line":49,"expression":"(response.id, response.new)"},"snapshot":"(\n    0,\n    true,\n)"},"old":{"module_name":"rust_message_storage_service__tests","metadata":{},"snapshot":"(\n    1,\n    true,\n)"}}
-{"run_id":"1707314336-36910646","line":79,"new":null,"old":null}
-{"run_id":"1707314336-36910646","line":49,"new":null,"old":null}

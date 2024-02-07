@@ -23,6 +23,7 @@ tower = "0.4"
 kv = "0.24.0"
 regex = "1.10.3"
 dashmap = "5.5.3"
+futures = "0.3.30"
 
 [build-dependencies]
 tonic-build = "0.10"
