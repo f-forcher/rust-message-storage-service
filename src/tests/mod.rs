@@ -52,6 +52,7 @@ async fn get_message_simple() {
             .unwrap()
             .into_inner();
 
+        assert_ne!(response.timestamp, None);
         assert_eq!(response.id, 1);
         assert_eq!(response.new, true);
     };
@@ -92,10 +93,7 @@ async fn err_wrong_key() {
 #[tokio::test]
 async fn get_multiple_messages() {
     let (serve_future, mut clients) = server_and_clients(2).await;
-    let (first, second) = match &mut clients[0..2] {
-        [first, second] => (first, second),
-        _ => panic!("Expected 2 clients"),
-    };
+    let [first, second] = &mut clients[0..2] else { panic!("Expected 2 clients") };
 
     let r1 = async {
         let response = first
@@ -108,6 +106,7 @@ async fn get_multiple_messages() {
             .into_inner();
 
         // First message, new id, is a new message
+        assert_ne!(response.timestamp, None);
         assert_eq!(response.id, 1);
         assert_eq!(response.new, true);
     };
@@ -128,6 +127,7 @@ async fn get_multiple_messages() {
             .into_inner();
 
         // New tenant and same key, get new id
+        assert_ne!(response.timestamp, None);
         assert_eq!(response.id, 2);
         assert_eq!(response.new, true);
     };
@@ -147,6 +147,7 @@ async fn get_multiple_messages() {
             .into_inner();
 
         // New key and same tenant, get new id
+        assert_ne!(response.timestamp, None);
         assert_eq!(response.id, 3);
         assert_eq!(response.new, true);
     };
@@ -166,6 +167,7 @@ async fn get_multiple_messages() {
             .into_inner();
 
         // Same tenant and key, get same id
+        assert_ne!(response.timestamp, None);
         assert_eq!(response.id, 2);
         assert_eq!(response.new, false);
     };
