@@ -1,9 +1,9 @@
+use futures::future::{FutureExt, Shared};
 use std::future::Future;
 use tokio::net::TcpListener;
 use tokio_stream::wrappers::TcpListenerStream;
 use tonic::transport::{Channel, Endpoint, Server};
 use tonic::Request;
-use futures::future::{FutureExt, Shared};
 
 use crate::api::grpc::message_storage::v1::{
     message_storage_client::MessageStorageClient, message_storage_server::MessageStorageServer,
@@ -11,9 +11,13 @@ use crate::api::grpc::message_storage::v1::{
 };
 use crate::MessageStorageService;
 
-
 /// Create a server and a number of clients
-async fn server_and_clients(num_clients: u32) -> (Shared<impl Future<Output = ()>>, Vec<MessageStorageClient<Channel>>) {
+async fn server_and_clients(
+    num_clients: u32,
+) -> (
+    Shared<impl Future<Output = ()>>,
+    Vec<MessageStorageClient<Channel>>,
+) {
     let listener = TcpListener::bind("127.0.0.1:0").await.unwrap();
     let addr = listener.local_addr().unwrap();
     let stream = TcpListenerStream::new(listener);
@@ -24,7 +28,8 @@ async fn server_and_clients(num_clients: u32) -> (Shared<impl Future<Output = ()
             .serve_with_incoming(stream)
             .await;
         assert!(result.is_ok());
-    }.shared();
+    }
+    .shared();
 
     let channel = Endpoint::try_from(format!("http://{addr}"))
         .unwrap()
@@ -93,7 +98,9 @@ async fn err_wrong_key() {
 #[tokio::test]
 async fn get_multiple_messages() {
     let (serve_future, mut clients) = server_and_clients(2).await;
-    let [first, second] = &mut clients[0..2] else { panic!("Expected 2 clients") };
+    let [first, second] = &mut clients[0..2] else {
+        panic!("Expected 2 clients")
+    };
 
     let r1 = async {
         let response = first
@@ -176,4 +183,3 @@ async fn get_multiple_messages() {
         () = r4 => (),
     }
 }
-

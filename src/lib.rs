@@ -78,13 +78,14 @@ impl MessageStorage for MessageStorageService {
                 .lock()
                 .map_err(|e| Status::internal(format!("Error acquiring the lock: {e}")))?;
 
-                if let Some(id) = store.get(&key_and_tenant) { (id.0, false) } else {
-                                     let id = MessageId(store.len() as u64 + 1);
-                                     let old_val = store
-                                         .insert(key_and_tenant, id);
-                                     assert!(old_val.is_none());
-                                     (id.0, true)
-                                 }
+            if let Some(id) = store.get(&key_and_tenant) {
+                (id.0, false)
+            } else {
+                let id = MessageId(store.len() as u64 + 1);
+                let old_val = store.insert(key_and_tenant, id);
+                assert!(old_val.is_none());
+                (id.0, true)
+            }
         };
 
         // .unwrap_or(&MessageId(store.len() as u64))
