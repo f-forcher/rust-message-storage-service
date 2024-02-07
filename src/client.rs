@@ -7,8 +7,8 @@ async fn main() -> Result<(), Box<dyn std::error::Error>> {
     let mut client = MessageStorageClient::connect("http://127.0.0.1:50051").await?;
 
     let request = tonic::Request::new(MessageRequest {
-        key: "Wrongo!".into(),
-        tenant: "tenant".into(),
+        key: "K-h53dk-A".into(),
+        tenant: "3bd1c697".into(),
     });
 
     let response = client.send_message(request).await?;
