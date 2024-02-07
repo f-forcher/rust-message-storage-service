@@ -59,7 +59,7 @@ async fn get_message_simple() {
 
         assert_ne!(response.timestamp, None);
         assert_eq!(response.id, 1);
-        assert_eq!(response.new, true);
+        assert!(response.new);
     };
 
     // Wait for completion
@@ -115,7 +115,7 @@ async fn get_multiple_messages() {
         // First message, new id, is a new message
         assert_ne!(response.timestamp, None);
         assert_eq!(response.id, 1);
-        assert_eq!(response.new, true);
+        assert!(response.new);
     };
     // Wait for completion
     tokio::select! {
@@ -136,7 +136,7 @@ async fn get_multiple_messages() {
         // New tenant and same key, get new id
         assert_ne!(response.timestamp, None);
         assert_eq!(response.id, 2);
-        assert_eq!(response.new, true);
+        assert!(response.new);
     };
     tokio::select! {
         () = serve_future.clone() => panic!("Server returned first"),
@@ -156,7 +156,7 @@ async fn get_multiple_messages() {
         // New key and same tenant, get new id
         assert_ne!(response.timestamp, None);
         assert_eq!(response.id, 3);
-        assert_eq!(response.new, true);
+        assert!(response.new);
     };
     tokio::select! {
         () = serve_future.clone() => panic!("Server returned first"),
@@ -176,7 +176,7 @@ async fn get_multiple_messages() {
         // Same tenant and key, get same id
         assert_ne!(response.timestamp, None);
         assert_eq!(response.id, 2);
-        assert_eq!(response.new, false);
+        assert!(response.new);
     };
     tokio::select! {
         () = serve_future.clone() => panic!("Server returned first"),
