@@ -21,6 +21,7 @@ thiserror = "1.0.56"
 tokio-stream =  { version = "0.1", features = ["full"] }
 tower = "0.4"
 kv = "0.24.0"
+regex = "1.10.3"
 
 [build-dependencies]
 tonic-build = "0.10"

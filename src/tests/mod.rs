@@ -33,6 +33,37 @@ async fn server_and_client() -> (impl Future<Output = ()>, MessageStorageClient<
 }
 
 #[tokio::test]
+async fn get_message_simple() {
+    let (serve_future, mut client) = server_and_client().await;
+
+    let request_future = async {
+        let response = client
+            .send_message(Request::new(MessageRequest {
+                key: "K-4bbf1-P".to_string(),
+                tenant: "tenant".to_string(),
+            }))
+            .await
+            .unwrap()
+            .into_inner();
+
+        insta::assert_debug_snapshot!(
+                (response.id, response.new),
+                @r###"
+        (
+            1,
+            true,
+        )
+        "###);
+    };
+
+    // Wait for completion
+    tokio::select! {
+        () = serve_future => panic!("Server returned first"),
+        () = request_future => (),
+    }
+}
+
+#[tokio::test]
 async fn err_wrong_key() {
     let (serve_future, mut client) = server_and_client().await;
 

@@ -904,6 +904,7 @@ dependencies = [
  "kv",
  "prost",
  "prost-types",
+ "regex",
  "thiserror",
  "tokio",
  "tokio-stream",

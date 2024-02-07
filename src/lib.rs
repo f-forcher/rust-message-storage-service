@@ -1,4 +1,5 @@
-use anyhow::{Context, Result};
+use anyhow::{anyhow, Context, Result};
+use regex::Regex;
 use std::time::SystemTime;
 use tonic::{Request, Response, Status};
 
@@ -9,6 +10,37 @@ use message_storage::v1::{MessageRequest, MessageResponse};
 pub mod api;
 #[cfg(test)]
 mod tests;
+
+#[derive(Debug)]
+pub struct KeyAndTenant {
+    key: String,
+    tenant: String,
+}
+
+impl KeyAndTenant {
+    pub fn try_from_parts(key: &str, tenant: &str) -> Result<Self> {
+        let valid_key_pattern = r"^K-[a-z0-9]{5}-[A-Z]$";
+        let valid_key_regex = Regex::new(valid_key_pattern)
+        .with_context(|| format!("Wrong key regex: {valid_key_pattern}"))?;
+
+        if !valid_key_regex.is_match(key) {
+            return Err(anyhow!("Key is wrong: {}", key));
+        }
+
+        Ok(Self {
+            key: key.to_owned(),
+            tenant: tenant.to_owned(),
+        })
+    }
+
+    pub fn key(&self) -> &str {
+        &self.key
+    }
+
+    pub fn tenant(&self) -> &str {
+        &self.tenant
+    }
+}
 
 #[derive(Debug, Default)]
 pub struct MessageStorageService {}
@@ -29,12 +61,9 @@ impl MessageStorage for MessageStorageService {
                 .context("System time is less than unit epoch")
                 .map_err(|e| Status::internal(format!("Internal error: {e}")))?;
 
-        let key = request.into_inner().key;
-        if key == "Wrongo!" {
-            return Err(Status::invalid_argument(format!("Key is wrong: {key}")));
-        } else {
-            println!("Key: {key}");
-        }
+        let request = request.into_inner();
+        let _key_and_tenant = KeyAndTenant::try_from_parts(&request.key, &request.tenant)
+            .map_err(|e| Status::invalid_argument(format!("{e}")))?;
 
         let reply = MessageResponse {
             timestamp: Some(prost_types::Timestamp::from(now)),
