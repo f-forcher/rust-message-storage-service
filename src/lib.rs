@@ -25,10 +25,9 @@ pub struct KeyAndTenant {
 #[derive(Debug, PartialEq, Eq, Copy, Clone)]
 pub struct MessageId(u64);
 
-
 impl KeyAndTenant {
     /// Validate the key and tenant and create a new `KeyAndTenant`.
-    /// 
+    ///
     /// # Errors
     /// Will return an error if the key is not in the right format.
     pub fn try_from_parts(key: &str, tenant: &str) -> Result<Self> {
