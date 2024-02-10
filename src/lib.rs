@@ -90,13 +90,12 @@ impl MessageStorage for MessageStorageService {
             }
         };
 
-        // .unwrap_or(&MessageId(store.len() as u64))
         let reply = MessageResponse {
             timestamp: Some(prost_types::Timestamp::from(now)),
             id,
             new: is_new,
         };
 
-        Ok(Response::new(reply)) // Send back our formatted greeting
+        Ok(Response::new(reply))
     }
 }
