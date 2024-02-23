@@ -1,5 +1,5 @@
 # rust-message-storage-service
-Proof of concept of a small message storage service in rust.
+Proof of concept of a concurrent message storage service in rust.
 
 # Run
 
