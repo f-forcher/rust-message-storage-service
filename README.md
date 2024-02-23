@@ -1,5 +1,5 @@
 # rust-message-storage-service
-Take home assessment for Nexthink.
+Proof of concept of a small message storage service in rust.
 
 # Run
 
